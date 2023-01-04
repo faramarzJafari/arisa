@@ -30,12 +30,15 @@ class login extends Controller
             }
             
             $check_pass = Hash::check($request->password,$password);
-            
+            // dd($user, $check_pass);
             if ($user && $check_pass) {
+                Auth::attempt(['name'=>$request->name,'password'=>$request->password]);
                 $request->session()->regenerate();
                 if($user->admin){
+                   
                     return redirect()->intended('dashboard');    
                 }
+                $request->session()->regenerate();
                 return redirect()->intended('showtest');
             }
             return redirect()->route('showLogin');
@@ -69,8 +72,12 @@ class login extends Controller
             'admin'=>$admin,
         ]);
         if($admin){
+            Auth::attempt(['name'=>$request->name,'password'=>$request->password]);
+            $request->session()->regenerate();
             return redirect()->route('dashboard');
         }
+        Auth::attempt(['name'=>$request->name,'password'=>$request->password]);
+            $request->session()->regenerate();
             return redirect()->route('showTest');
     }
 
@@ -80,29 +87,4 @@ class login extends Controller
         return view('firstStep');
 
    }
-
-//    public function getInfo(Request $request){
-
-
-//     $validated = $request->validate([
-//         'name' => 'required',
-//         'password' => 'required|confirmed',
-//         'password_confirmation' => 'required'
-//     ]);
-
-//     $create_admin = User::create([
-//         'name'=>$request->name,
-//         'password'=>Hash::make($request->password),
-//         'admin'=> true,
-//     ]);
-
-//     $id = User::where('name',$request->name)->first()->id;
-    
-//     if ($create_admin){
-//         Auth::loginUsingId($id);
-//         $request->session()->regenerate();
-
-//         return redirect()->intended('dashboard');
-//     }
-//    }
 }
