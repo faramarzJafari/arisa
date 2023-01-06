@@ -16,7 +16,7 @@ class auth
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function handle(Request $request, Closure $next)
-    {
+    {        
         if(FacadesAuth::check()){
             return $next($request);
         }else{

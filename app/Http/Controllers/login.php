@@ -3,12 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Repository\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class login extends Controller
 {
+
+    private $user;
+
+    public function __construct(UserRepository $userRepository)
+    {   
+        $this->user = $userRepository;
+    }
+
+
     public function index(){
         return view('login');
     }
@@ -19,8 +29,8 @@ class login extends Controller
             'name' => 'required',
             'password' => 'required',
         ]);
- 
-        $user = User::where('name',$request->name)->first();
+         
+        $user = $this->user->first('name',$request->name);
         
         
             if($user != null){
@@ -30,7 +40,7 @@ class login extends Controller
             }
             
             $check_pass = Hash::check($request->password,$password);
-            // dd($user, $check_pass);
+
             if ($user && $check_pass) {
                 Auth::attempt(['name'=>$request->name,'password'=>$request->password]);
                 $request->session()->regenerate();
@@ -42,7 +52,7 @@ class login extends Controller
                 return redirect()->intended('showtest');
             }
             return redirect()->route('showLogin');
-            // ->withErrors(['error'=>'نام کاربری یا رمز عبور اشتباه است'])
+            
         
         
         
@@ -60,13 +70,13 @@ class login extends Controller
             'password' => ['required','confirmed'],
             'password_confirmation'=> ['required'],
         ]);
-        if(User::where('admin',true)->get()->count()){
+        if($this->user->count()){
             $admin = false;         
         }else{
             $admin = true;         
         }
         
-        $register = User::create([
+        $register = $this->user->create([
             'name'=>$request->name,
             'password'=>Hash::make($request->password),
             'admin'=>$admin,

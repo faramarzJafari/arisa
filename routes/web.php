@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\dashboard;
 use App\Http\Controllers\firstStep;
 use App\Http\Controllers\login;
+use App\Http\Controllers\questionController;
 use App\Http\Controllers\test;
 use App\Http\Controllers\users;
 use Illuminate\Support\Facades\Route;
@@ -20,9 +22,15 @@ use Symfony\Component\Routing\DependencyInjection\RoutingResolverPass;
 */
 
 
-Route::controller(test::class)->middleware('Authen')->group(function(){
+
+Route::controller(questionController::class)->middleware('Authen')->group(function(){
+
     Route::get('/showTest','showTest')->name('showTest');
     Route::post('/makeTest','makeTest')->name('makeTest');
+});
+    
+
+Route::controller(AnswerController::class)->middleware('Authen')->group(function(){
     Route::post('/getTest','getTest')->name('getTest');
     Route::get('/showResult','showResult')->name('showResult');
 });
@@ -33,6 +41,7 @@ Route::controller(dashboard::class)->middleware('isAdmin')->group(function () {
     Route::get('/users','users')->name('users');
 });
 
+
 Route::controller(users::class)->middleware('isAdmin')->group(function () {
     Route::get('/users','showUsers')->name('users');
 });
@@ -42,9 +51,7 @@ Route::controller(login::class)->group(function(){
     Route::get('/register','ShowRegister')->name('showRegister');
     Route::Post('/getInfoRegister','register')->name('register');
     Route::get('/login','index')->name('showLogin');
-    Route::post('/getInfo','login')->name('login');
-    
-    
+    Route::post('/getInfo','login')->name('login');        
 });
 
 
